@@ -2,49 +2,66 @@
 import './App.css'
 import { Button } from './components/ui/button'
 import PptxGenJS  from 'pptxgenjs'
-
+import { Textarea } from './components/ui/textarea';
+import DefaultTemplate from './components/DefaultTemplate';
+import { Label } from './components/ui/label';
+import Slides from './components/Slides'
 function App() {
   
   const pres = new PptxGenJS();
 
+  pres.defineSlideMaster({ 
+    title: 'MASTER_SLIDE',
+    background: { color: '#000000' },
+
+  });
+  
+
+  //Creating the slides
   const createSlide = (e: any) => {
-    e.preventDefault();
-
-    const slide = pres.addSlide();
-    const title = e.target.title.value;
-    const subtitle = e.target.subtitle.value;
-    //const content = e.target.content.value;
-    
-    slide.addText(title, { x: 0.5, y: 0.7, w: 3, color: "0000FF", fontSize: 64 });
-    slide.addText(subtitle, { x: 2.7, y: 1.0, w: 5, color: "DDDD00", fontSize: 90 });
-    
    
+    e.preventDefault();
+    
+    
+    const content = e.target.content.value;
 
+    let eachSlideText:string = "";
+    content.split('\n').forEach((line: string,index) => {
+             
+             console.log(line)
+             if(line.trim() == '' || index == content.split('\n').length - 1){
+                console.log(eachSlideText)
+                const slide = pres.addSlide({masterName : 'MASTER_SLIDE'});
+                slide.addText(eachSlideText, { x: 0 , y: 3, w: "100%", color: "#FFFFFF", fontSize: 40, align:'center' });
+                eachSlideText = '';
+             }else {
+               eachSlideText += line + '\n';
+             }
+    });
+    
+    console.log(pres)
   }
 
   const generatePresentation = () => {
     pres.writeFile();
   }
 
- 
+
   return (
-    <>
-       <form onSubmit={createSlide} className="flex flex-col gap-4">
-        
-        
-        <label>
-          Content:
-          <input type="text" name="content" />
-        </label>
-
-
-        <div>
-             <Button type="submit">Create Slide</Button>
-        </div>
-       
-       </form>
+    <div className='flex flex-col gap-10'>
+      <DefaultTemplate />
+      <form onSubmit={createSlide}>
+           <div className='flex flex-col gap-2 lg:w-[60%] '>
+           <Label htmlFor="message">Convert the lyrics into slides :</Label>
+           <Textarea   placeholder='Paste your lyrics here' name="content"/>
+           </div>
+      <Button className="mt-10" type="submit">generate song slides</Button>      
+      </form>
       <Button onClick={generatePresentation} className='mt-2'>Generate Ppt</Button>
-    </>
+      
+      <Slides />
+    </div>
+
   )
 }
 
