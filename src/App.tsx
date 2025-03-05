@@ -5,7 +5,7 @@ import PptxGenJS  from 'pptxgenjs'
 import { Textarea } from './components/ui/textarea';
 import DefaultTemplate from './components/DefaultTemplate';
 import { Label } from './components/ui/label';
-import Slides from './components/Slides';
+import Slide from './components/Slide';
 import {useState,useEffect, useRef } from 'react'
 
 
@@ -66,7 +66,13 @@ function App() {
       </form>
       <Button onClick={generatePresentation} className='mt-2'>Generate Ppt</Button>
       
-      <Slides slides={slides} />
+       {slides.length > 0 ? 
+          <div className="flex flex-row gap-4">
+               {slides.map((slide)=>{return <Slide key={slide._name} slide={slide}/> })}
+          </div>
+          :
+          <p>Paste the lyrics and generate slides</p>
+        }
     </div>
 
   )
