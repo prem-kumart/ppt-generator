@@ -63,7 +63,7 @@ function App() {
     
     const newSlides: SlideType[] = [];
     content.split('\n').forEach((line: string,index) => {
-             console.log(eachSlideText)
+             
              if( (line.trim() == '' || index == content.split('\n').length - 1) && eachSlideText.trim() != "" ){
                 newSlides.push({ name: `Slide ${slides.length + newSlides.length + 1}`, text: eachSlideText });
                 eachSlideText = '';
@@ -81,7 +81,6 @@ function App() {
   //Generating the Presentation slides and creating the file
   const generatePresentation:SubmitHandler<z.infer<typeof pptSchema>> = (data: z.infer<typeof pptSchema>) => {
 
-    console.log(data)
     pres.current.defineSlideMaster({ 
       title: 'MASTER_SLIDE',
       background: { color: '#000000' },
@@ -172,7 +171,7 @@ function App() {
           name="fontFace"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Font Size</FormLabel>
+              <FormLabel>Font Face</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -196,7 +195,7 @@ function App() {
           name="fontType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Font Size</FormLabel>
+              <FormLabel>Font Type</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
