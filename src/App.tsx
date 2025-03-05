@@ -45,10 +45,6 @@ function App() {
       lyrics:"",
     },
   })
-  console.log(slides)
-
-
-
   const pres = useRef(new PptxGenJS())
 
   //Creating the slides
