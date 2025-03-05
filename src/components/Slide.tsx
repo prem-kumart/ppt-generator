@@ -4,28 +4,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { SlideType } from "@/types"
 
-interface SlideProps {
-  slide: {
-    _name: string;
-    _slideObjects: {
-      text: {
-        text: string;
-      }[];
-    }[];
-  };
-}
-
-const Slide: React.FC<SlideProps> = ({ slide }) => {
+const Slide = ({ slide }: { slide: SlideType }) => {
 
   return (
 
       <Card >
           <CardHeader>
-            <CardTitle>{slide._name}</CardTitle>
+            <CardTitle>{slide.name}</CardTitle>
           </CardHeader>
           <CardContent className="text-ellipsis text-center">
-             <p>{slide._slideObjects[0].text[0].text}</p>
+             <p>{slide.text}</p>
           </CardContent>
       </Card>
   )

@@ -7,6 +7,7 @@ import Slide from './components/Slide';
 import {useState, useRef } from 'react'
 import { fontList,sampleLyrics } from './data';
 import { formSchema } from './schema';
+import { SlideType } from './types';
 import {
   Select,
   SelectContent,
@@ -34,7 +35,7 @@ import {z} from "zod";
 function App() {
 
 
-  const [slides,setSlides] = useState([])
+  const [slides,setSlides] = useState<SlideType[]>([])
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,6 +45,7 @@ function App() {
       lyrics:"",
     },
   })
+  console.log(slides)
 
 
 
@@ -60,26 +62,29 @@ function App() {
     const content = data.lyrics;
 
     let eachSlideText:string = "";
+    const newSlides: SlideType[] = [];
     content.split('\n').forEach((line: string,index) => {
-             
-             console.log(line)
+        
              if(line.trim() == '' || index == content.split('\n').length - 1){
-                console.log(eachSlideText)
+                
                 const slide = pres.current.addSlide({masterName : 'MASTER_SLIDE'});
                 slide.addText(eachSlideText, { x: 0 , y: 3, w: "100%", color: "#FFFFFF", fontSize: Number(data.fontSize), align:'center' ,fontFace:data.fontFace});
+                newSlides.push({ name: `Slide ${newSlides.length + 1}`, text: eachSlideText });
                 eachSlideText = '';
              }else {
                eachSlideText += line + '\n';
              }
     });
     
-    setSlides( (prevState)=>[...pres.current._slides]);
-    console.log(pres)
+    setSlides((prevSlides) => [...prevSlides, ...newSlides]);
+
 
   }
 
   const generatePresentation = () => {
-    pres.current.writeFile();
+    if (pres.current) {
+      pres.current.writeFile();
+    }
   }
 
 
@@ -169,7 +174,7 @@ function App() {
          <div>
             <h2>Slides Preview </h2>
             <div className="grid grid-cols-3 gap-2">
-                 {slides.map((slide)=>{return <Slide key={slide._name} slide={slide}/> })}
+                 {slides.map((slide)=>{return <Slide key={slide.name} slide={slide}/> })}
             </div>
           </div>
           :
