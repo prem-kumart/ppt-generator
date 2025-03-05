@@ -172,7 +172,7 @@ function App() {
           name="fontFace"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Font Size</FormLabel>
+              <FormLabel>Font Face</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -196,7 +196,7 @@ function App() {
           name="fontType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Font Size</FormLabel>
+              <FormLabel>Font Type</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
