@@ -3,9 +3,9 @@ import './App.css'
 import { Button } from './components/ui/button'
 import PptxGenJS  from 'pptxgenjs'
 import { Textarea } from './components/ui/textarea';
-import { Label } from './components/ui/label';
 import Slide from './components/Slide';
 import {useState, useRef } from 'react'
+import { fontList } from './data';
 import {
   Select,
   SelectContent,
@@ -15,9 +15,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import Header from './components/Header';
 import { Input } from './components/ui/input';
-import {useForm, SubmitHandler} from 'react-hook-form';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm,SubmitHandler } from "react-hook-form"
+import { z } from "zod"
 import { create } from 'domain';
 const sampleLyrics = 
 `
@@ -44,33 +55,52 @@ My sin was great Your love was greater
 What could separate us now?
 `
 
-type Inputs = {
-   fontSize : string
-   backgroundColor : string
-   fontFace : string
-   lyrics : string
-}
+// type Inputs = {
+//    fontSize : string
+//    backgroundColor : string
+//    fontFace : string
+//    lyrics : string
+// }
 
+const formSchema = z.object({
+  fontSize: z.string().min(1, {
+    message: "Must select a number.",
+  }),
+  fontFace:z.string().min(1, {
+    message: "Must enter a font face.",
+  }),
+  lyrics:z.string().min(10,{
+    message:"Must add  lyrics."
+  })
+})
 
 function App() {
 
 
   const [slides,setSlides] = useState([])
-  const {register,handleSubmit,watch,formState:{errors}} = useForm<Inputs>();
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      fontSize: "16",
+      fontFace : "",
+      lyrics:""
+    },
+  })
 
 
 
   const pres = useRef(new PptxGenJS())
 
   //Creating the slides
-  const createSlides:SubmitHandler<Inputs> = (e: any) => {
+  const createSlides:SubmitHandler<z.infer<typeof formSchema>> = (data: z.infer<typeof formSchema>) => {
       pres.current.defineSlideMaster({ 
         title: 'MASTER_SLIDE',
         background: { color: '#000000' },
       });
 
-    e.preventDefault();
-    const content = e.target.content.value;
+    console.log(data);
+    const content = data.lyrics;
 
     let eachSlideText:string = "";
     content.split('\n').forEach((line: string,index) => {
@@ -79,7 +109,7 @@ function App() {
              if(line.trim() == '' || index == content.split('\n').length - 1){
                 console.log(eachSlideText)
                 const slide = pres.current.addSlide({masterName : 'MASTER_SLIDE'});
-                slide.addText(eachSlideText, { x: 0 , y: 3, w: "100%", color: "#FFFFFF", fontSize: 40, align:'center' ,fontFace:'Arial'});
+                slide.addText(eachSlideText, { x: 0 , y: 3, w: "100%", color: "#FFFFFF", fontSize: Number(data.fontSize), align:'center' ,fontFace:data.fontFace});
                 eachSlideText = '';
              }else {
                eachSlideText += line + '\n';
@@ -101,51 +131,85 @@ function App() {
     <Header />
   
      <div className='flex flex-col gap-10 ml-48'>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit(createSlides)}>
-       
-           <div className="flex gap-2">
-             <Label htmlFor="font-size">Font Size</Label>
-             <Select {...register("fontSize", {required:"Select the font-size"})} >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="font-size" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Select the size</SelectLabel>
-                        {[...Array(61).keys()].map((fontSize)=>{
+      <Form {...form}>
+      <form onSubmit={form.handleSubmit(createSlides)} className="w-2/3 space-y-6">
+
+
+         <FormField
+          control={form.control}
+          name="fontSize"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Font Size</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a font Size" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                {[...Array(61).keys()].map((fontSize)=>{
                            return  <SelectItem key={fontSize} value={`${fontSize}`}>{fontSize}</SelectItem>
                         })}
-                       
-                        </SelectGroup>
-                      </SelectContent>
-             </Select>
-           </div>
-           {errors.fontSize && <span className='text-red-700'>{errors.fontSize.message}</span>}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-           <div className="flex gap-2">
-             <Label htmlFor="font-size">Font-color</Label>
-             <div className='h-10 w-20 border-2 rounded-md border-black'>
-                 
-             </div>
-        
-           </div>
 
-           <div className="flex gap-2 items-center ">
-             <Label htmlFor="font-size">Font-face</Label>
-             <Input {...register("fontFace",{required : 'Enter the font face'})} className="w-60" placeholder='font face' />
-             <span className='text-sm ml-2' >Default : Arial</span>
-           </div>
-           {errors.fontFace && <span className='text-red-700'>{errors.fontFace.message}</span>}
-        
+<FormField
+          control={form.control}
+          name="fontFace"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Font Size</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a font face" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                {fontList.map((fontName)=>{
+                           return  <SelectItem key={fontName} value={`${fontName}`}>{fontName}</SelectItem>
+                        })}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
            
-           <div className='flex flex-col gap-2 lg:w-[60%] '>
-           <Label htmlFor="lyrics-text">Add Song lyrics</Label>
-           <Textarea {...register("lyrics", {required:"Add some lyrics to generate slides"})} id="lyrics-text"  placeholder={`${sampleLyrics}`} name="content"/>
-           </div>
-           {errors.lyrics && <span className='text-red-700'>{errors.lyrics.message}</span>}
-        
+
+           
+          <FormField
+          control={form.control}
+          name="lyrics"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Lyrics to Slides</FormLabel>
+              <FormControl>
+              <Textarea placeholder={`${sampleLyrics}`} {...field}/>
+              </FormControl>
+              <FormDescription>
+                *Follow the format after empty space new slide starts.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}/>
+          
+
+           
+         
       <Button className="w-28 mt-10" type="submit">Add Slides</Button>      
+      
+      
       </form>
+      </Form>
+
 
       {/*Generate the Slides */}
       <Button onClick={generatePresentation} className='w-28 mt-2'>Generate PPT</Button>
@@ -154,7 +218,7 @@ function App() {
        {/* slides preview */}
        {slides.length > 0 ? 
          <div>
-            <h2>Slides Preview</h2>
+            <h2>Slides Preview </h2>
             <div className="grid grid-cols-3 gap-2">
                  {slides.map((slide)=>{return <Slide key={slide._name} slide={slide}/> })}
             </div>
