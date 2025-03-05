@@ -1,13 +1,22 @@
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 
-const Slide = ({slide}) => {
+interface SlideProps {
+  slide: {
+    _name: string;
+    _slideObjects: {
+      text: {
+        text: string;
+      }[];
+    }[];
+  };
+}
+
+const Slide: React.FC<SlideProps> = ({ slide }) => {
 
   return (
 

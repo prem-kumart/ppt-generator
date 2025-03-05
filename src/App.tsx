@@ -10,9 +10,7 @@ import { formSchema } from './schema';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -29,7 +27,7 @@ import Header from './components/Header';
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm,SubmitHandler } from "react-hook-form"
-
+import {z} from "zod";
 
 
 
@@ -44,7 +42,6 @@ function App() {
       fontSize: "16",
       fontFace : "",
       lyrics:"",
-      fileName:""
     },
   })
 
