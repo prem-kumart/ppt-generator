@@ -122,7 +122,10 @@ function App() {
               <FormMessage />
             </FormItem>
           )}/>
-          <Button className="w-28 " type="submit">Generate Slides</Button>      
+          <div className='flex gap-4'>
+            <Button className="w-28" type="submit">Generate Slides</Button>
+            <Button className="w-28" onClick={()=>setSlides((prevState)=>[])}>Delete All Slides</Button>
+          </div>
       </form>
       </Form>
 
@@ -191,7 +194,7 @@ function App() {
         />
 
 
-<FormField
+      <FormField
           control={pptForm.control}
           name="fontType"
           render={({ field }) => (
