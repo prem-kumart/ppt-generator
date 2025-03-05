@@ -3,13 +3,14 @@ import './App.css'
 import { Button } from './components/ui/button'
 import PptxGenJS  from 'pptxgenjs'
 import { Textarea } from './components/ui/textarea';
-import DefaultTemplate from './components/DefaultTemplate';
 import { Label } from './components/ui/label';
 import Slide from './components/Slide';
 import {useState,useEffect, useRef } from 'react'
 
 
 function App() {
+
+
   const [slides,setSlides] = useState([])
 
   const pres = useRef(new PptxGenJS())
@@ -55,20 +56,29 @@ function App() {
 
 
   return (
-    <div className='flex flex-col gap-10'>
-      <DefaultTemplate />
+    
+     
+     <div className='flex flex-col gap-10'>
       <form onSubmit={createSlide}>
            <div className='flex flex-col gap-2 lg:w-[60%] '>
            <Label htmlFor="message">Convert the lyrics into slides :</Label>
            <Textarea   placeholder='Paste your lyrics here' name="content"/>
            </div>
-      <Button className="mt-10" type="submit">generate song slides</Button>      
+        
+      <Button className="mt-10" type="submit">Add Slides</Button>      
       </form>
-      <Button onClick={generatePresentation} className='mt-2'>Generate Ppt</Button>
+
+      {/*Generate the Slides */}
+      <Button onClick={generatePresentation} className='w-28 mt-2'>Generate PPT</Button>
       
+      
+       {/* slides preview */}
        {slides.length > 0 ? 
-          <div className="flex flex-row gap-4">
-               {slides.map((slide)=>{return <Slide key={slide._name} slide={slide}/> })}
+         <div>
+            <h2>Slides Preview</h2>
+            <div className="grid grid-cols-3 gap-2">
+                 {slides.map((slide)=>{return <Slide key={slide._name} slide={slide}/> })}
+            </div>
           </div>
           :
           <p>Paste the lyrics and generate slides</p>

@@ -1,10 +1,24 @@
-import React from 'react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 const Slide = ({slide}) => {
+
   return (
-    <div className='w-20 h-20'>
-      
-    </div>
+
+      <Card >
+          <CardHeader>
+            <CardTitle>{slide._name}</CardTitle>
+          </CardHeader>
+          <CardContent className="text-ellipsis text-center">
+             <p>{slide._slideObjects[0].text[0].text}</p>
+          </CardContent>
+      </Card>
   )
 }
 
