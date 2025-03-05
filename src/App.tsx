@@ -5,24 +5,30 @@ import PptxGenJS  from 'pptxgenjs'
 import { Textarea } from './components/ui/textarea';
 import DefaultTemplate from './components/DefaultTemplate';
 import { Label } from './components/ui/label';
-import Slides from './components/Slides'
+import Slides from './components/Slides';
+import {useState,useEffect, useRef } from 'react'
+
+
 function App() {
-  
-  const pres = new PptxGenJS();
+  const [slides,setSlides] = useState([])
 
-  pres.defineSlideMaster({ 
-    title: 'MASTER_SLIDE',
-    background: { color: '#000000' },
+  const pres = useRef(new PptxGenJS())
 
-  });
-  
+
 
   //Creating the slides
   const createSlide = (e: any) => {
+
+
+ 
+      pres.current.defineSlideMaster({ 
+        title: 'MASTER_SLIDE',
+        background: { color: '#000000' },
+
+      });
+
    
     e.preventDefault();
-    
-    
     const content = e.target.content.value;
 
     let eachSlideText:string = "";
@@ -31,7 +37,7 @@ function App() {
              console.log(line)
              if(line.trim() == '' || index == content.split('\n').length - 1){
                 console.log(eachSlideText)
-                const slide = pres.addSlide({masterName : 'MASTER_SLIDE'});
+                const slide = pres.current.addSlide({masterName : 'MASTER_SLIDE'});
                 slide.addText(eachSlideText, { x: 0 , y: 3, w: "100%", color: "#FFFFFF", fontSize: 40, align:'center' });
                 eachSlideText = '';
              }else {
@@ -39,11 +45,12 @@ function App() {
              }
     });
     
+    setSlides( (prevState)=>[...pres.current._slides]);
     console.log(pres)
   }
 
   const generatePresentation = () => {
-    pres.writeFile();
+    pres.current.writeFile();
   }
 
 
@@ -59,7 +66,7 @@ function App() {
       </form>
       <Button onClick={generatePresentation} className='mt-2'>Generate Ppt</Button>
       
-      <Slides />
+      <Slides slides={slides} />
     </div>
 
   )
