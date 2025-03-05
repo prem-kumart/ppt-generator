@@ -5,7 +5,8 @@ import PptxGenJS  from 'pptxgenjs'
 import { Textarea } from './components/ui/textarea';
 import Slide from './components/Slide';
 import {useState, useRef } from 'react'
-import { fontList } from './data';
+import { fontList,sampleLyrics } from './data';
+import { formSchema } from './schema';
 import {
   Select,
   SelectContent,
@@ -25,54 +26,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Header from './components/Header';
-import { Input } from './components/ui/input';
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm,SubmitHandler } from "react-hook-form"
-import { z } from "zod"
-import { create } from 'domain';
-const sampleLyrics = 
-`
---- Paste your lyrics here ---
 
---- Sample Format ---
-You were the Word at the beginning
-One with  God the  Lord Most High
-Your hidden glory in creation
-Now revealed in You our Christ
 
-What a beautiful Name it is
-What a beautiful Name it is 
-The Name of Jesus Christ my King
- 
-What a beautiful Name it is
-Nothing compares to this
-What a beautiful Name it is 
-The Name of Jesus
 
-You didn’t want heaven without us
-So Jesus You brought heaven down
-My sin was great Your love was greater
-What could separate us now?
-`
-
-// type Inputs = {
-//    fontSize : string
-//    backgroundColor : string
-//    fontFace : string
-//    lyrics : string
-// }
-
-const formSchema = z.object({
-  fontSize: z.string().min(1, {
-    message: "Must select a number.",
-  }),
-  fontFace:z.string().min(1, {
-    message: "Must enter a font face.",
-  }),
-  lyrics:z.string().min(10,{
-    message:"Must add  lyrics."
-  })
-})
 
 function App() {
 
@@ -84,7 +43,8 @@ function App() {
     defaultValues: {
       fontSize: "16",
       fontFace : "",
-      lyrics:""
+      lyrics:"",
+      fileName:""
     },
   })
 
@@ -115,6 +75,7 @@ function App() {
                eachSlideText += line + '\n';
              }
     });
+    
     setSlides( (prevState)=>[...pres.current._slides]);
     console.log(pres)
 
@@ -130,11 +91,11 @@ function App() {
     <>
     <Header />
   
-     <div className='flex flex-col gap-10 ml-48'>
+     <div className='flex flex-col gap-10 m-auto pl-40 pr-40 pb-40'>
       <Form {...form}>
       <form onSubmit={form.handleSubmit(createSlides)} className="w-2/3 space-y-6">
 
-
+        <div className='flex gap-10'>
          <FormField
           control={form.control}
           name="fontSize"
@@ -159,7 +120,7 @@ function App() {
         />
 
 
-<FormField
+        <FormField
           control={form.control}
           name="fontFace"
           render={({ field }) => (
@@ -182,9 +143,7 @@ function App() {
           )}
         />
 
-           
-
-           
+      </div>
           <FormField
           control={form.control}
           name="lyrics"
@@ -200,19 +159,12 @@ function App() {
               <FormMessage />
             </FormItem>
           )}/>
-          
-
-           
-         
-      <Button className="w-28 mt-10" type="submit">Add Slides</Button>      
-      
-      
+          <Button className="w-28 " type="submit">Generate Slides</Button>      
       </form>
       </Form>
 
-
       {/*Generate the Slides */}
-      <Button onClick={generatePresentation} className='w-28 mt-2'>Generate PPT</Button>
+      <Button onClick={generatePresentation} className='w-28  bg-red-700'>Generate PPT</Button>
       
       
        {/* slides preview */}
@@ -227,7 +179,6 @@ function App() {
           <p>Paste the lyrics and generate slides</p>
         }
     </div>
-
 
     </>
 
