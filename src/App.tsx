@@ -36,6 +36,8 @@ function App() {
 
 
   const [slides,setSlides] = useState<SlideType[]>([])
+
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,6 +55,10 @@ function App() {
     },
   })
 
+  
+
+
+
   const pres = useRef(new PptxGenJS())
 
   //Creating the slides
@@ -63,9 +69,9 @@ function App() {
     
     const newSlides: SlideType[] = [];
     content.split('\n').forEach((line: string,index) => {
-             console.log(eachSlideText)
+             
              if( (line.trim() == '' || index == content.split('\n').length - 1) && eachSlideText.trim() != "" ){
-                newSlides.push({ name: `Slide ${slides.length + newSlides.length + 1}`, text: eachSlideText });
+                newSlides.push({ id: slides.length + newSlides.length + 1, text: eachSlideText });
                 eachSlideText = '';
              }else {
                eachSlideText += line + '\n';
@@ -76,12 +82,18 @@ function App() {
 
   }
 
+  const removeSlide = (id:number)=>{
+      const nextState  = slides.filter((slide)=> slide.id!=id).map((slide,index)=> {
+                                                          return {...slide,id:index+1}
+                                                    })
+      setSlides(nextState);
+      
+  }
 
 
   //Generating the Presentation slides and creating the file
   const generatePresentation:SubmitHandler<z.infer<typeof pptSchema>> = (data: z.infer<typeof pptSchema>) => {
 
-    console.log(data)
     pres.current.defineSlideMaster({ 
       title: 'MASTER_SLIDE',
       background: { color: '#000000' },
@@ -97,44 +109,48 @@ function App() {
     }
   }
 
-
-
   return (
 
     <>
     <Header />
   
      <div className='flex flex-col gap-10 m-auto pl-40 pr-40 pb-40'>
-      <Form {...form}>
-      <form onSubmit={form.handleSubmit(createSlides)} className="w-2/3 space-y-6">
-          <FormField
-          control={form.control}
-          name="lyrics"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Lyrics to Slides</FormLabel>
-              <FormControl>
-              <Textarea placeholder={`${sampleLyrics}`} {...field}/>
-              </FormControl>
-              <FormDescription>
-                *Follow the format after empty space new slide starts.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}/>
-          <div className='flex gap-4'>
-            <Button className="w-28" type="submit">Generate Slides</Button>
-            <Button className="w-28" onClick={()=>setSlides((prevState)=>[])}>Delete All Slides</Button>
-          </div>
-      </form>
-      </Form>
+      <div className='flex gap-10'>
+        <Form {...form}>
+        <form onSubmit={form.handleSubmit(createSlides)} className="w-2/3 space-y-6">
+            <FormField
+            control={form.control}
+            name="lyrics"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Lyrics to Slides</FormLabel>
+                <FormControl>
+                <Textarea placeholder={`${sampleLyrics}`} {...field}/>
+                </FormControl>
+                <FormDescription>
+                  *Follow the format after empty space new slide starts.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}/>
+            <div className='flex gap-4'>
+              <Button className="w-28" type="submit">Generate Slides</Button>
+        
+            </div>
+        </form>
+        </Form>
+
+        
+      </div>
+
+      <Button className="w-28" onClick={()=>setSlides([])}>Delete All Slides</Button>
 
        {/* slides preview */}
        {slides.length > 0 ? 
          <div>
             <h2>Slides Preview </h2>
             <div className="grid grid-cols-3 gap-2">
-                 {slides.map((slide)=>{return <Slide key={slide.name} slide={slide}/> })}
+                 {slides.map((slide,index)=>{return <Slide key={slide.id} id={slide.id}  text={slide.text} removeSlide={removeSlide}/> })}
             </div>
           </div>
           :
@@ -194,7 +210,7 @@ function App() {
         />
 
 
-      <FormField
+          <FormField
           control={pptForm.control}
           name="fontType"
           render={({ field }) => (
@@ -213,12 +229,16 @@ function App() {
               </Select>
               <FormMessage />
             </FormItem>
-          )}
-        />          
+              )}
+           />          
       </div>
-          <Button type="submit" className='w-28  bg-red-700'>Generate PPT</Button> 
+          <Button type="submit" className='w-28 bg-red-700'>Generate PPT</Button> 
       </form>
       </Form>
+
+      <footer>
+           <a href="https://www.flaticon.com/free-icons/quit" title="quit icons">Quit icons created by Pixel perfect - Flaticon</a>
+      </footer>
       
      </div>
     </>

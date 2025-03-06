@@ -8,6 +8,16 @@ export const formSchema = z.object({
 })
 
 
+// export const insertSchema = z.object({
+//   lyrics:z.string().min(10,{
+//     message:"Must add  lyrics."
+//   }),
+//   position:z.number({
+//     message: "Enter the position to insert"
+//   })
+// })
+
+
 export const pptSchema = z.object({
   fontSize: z.string().min(1, {
     message: "Must select a number.",

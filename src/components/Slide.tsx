@@ -4,20 +4,31 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { SlideType } from "@/types"
+interface SlideProps {
+  id: number;
+  text: string;
+  removeSlide: (id:number) => void;
+}
 
-const Slide = ({ slide }: { slide: SlideType }) => {
+
+
+const Slide:React.FC<SlideProps> = ({ id,text,removeSlide }) => {
 
   return (
-
-      <Card >
+    <>
+   
+      <Card>
           <CardHeader>
-            <CardTitle>{slide.name}</CardTitle>
+            <CardTitle className="flex justify-between items-center" >
+               <p>{`Slide ${id}`}</p>
+               <img className="w-6 h-6" src="./assets/remove.png" alt="delete-icon" onClick={()=>removeSlide(id)}/>
+              </CardTitle>
           </CardHeader>
           <CardContent className="text-ellipsis text-center">
-             <p>{slide.text}</p>
+             <p>{text}</p>
           </CardContent>
       </Card>
+      </>
   )
 }
 

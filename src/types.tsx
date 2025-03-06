@@ -1,4 +1,4 @@
 export interface SlideType   {
-    name:string;
+    id:number;
     text:string;
 }
