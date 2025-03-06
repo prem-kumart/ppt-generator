@@ -28,7 +28,9 @@ import Header from './components/Header';
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm,SubmitHandler } from "react-hook-form"
-import {z} from "zod";
+import { z}from "zod";
+import { RadioGroup, RadioGroupItem } from './components/ui/radio-group';
+import { Input } from './components/ui/input';
 
 
 
@@ -43,6 +45,8 @@ function App() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       lyrics:"",
+      insertAt:"beginning",
+      startPosition:"1",
     },
   })
 
@@ -55,14 +59,14 @@ function App() {
     },
   })
 
-  
-
+  const insertAt = form.watch("insertAt");
 
 
   const pres = useRef(new PptxGenJS())
 
   //Creating the slides
   const createSlides:SubmitHandler<z.infer<typeof formSchema>> = (data: z.infer<typeof formSchema>) => {
+ 
     const content = data.lyrics;
 
     let eachSlideText:string = "";
@@ -77,8 +81,33 @@ function App() {
                eachSlideText += line + '\n';
              }
     });
+
+    if(data.insertAt == "end"){
+        setSlides((prevSlides) => [...prevSlides, ...newSlides]);
+        return 
+    }
+
+    if(data.insertAt =="beginning"){
+       const nextState = [...newSlides,...slides].map((slide,index)=>{ return {...slide,id:index+1} })
+       setSlides(nextState);
+       return;
+    }
+
+    if(data.insertAt == "at"){
+      const prevState = slides;
+      const nextState = insertAtIndex(prevState,newSlides,Number(data.startPosition)).map((slide,index)=>{return {...slide,id:index+1}})
+      setSlides(nextState);
+
+      return;
+    }
     
-    setSlides((prevSlides) => [...prevSlides, ...newSlides]);
+   
+
+  }
+
+  function insertAtIndex(originalArray:SlideType[],newArray:SlideType[],index:number){
+    originalArray.splice(index,0,...newArray)
+    return originalArray
 
   }
 
@@ -117,7 +146,8 @@ function App() {
      <div className='flex flex-col gap-10 m-auto pl-40 pr-40 pb-40'>
       <div className='flex gap-10'>
         <Form {...form}>
-        <form onSubmit={form.handleSubmit(createSlides)} className="w-2/3 space-y-6">
+        <form onSubmit={form.handleSubmit(createSlides)} className=" flex  flex-col w-2/3 space-y-6">
+            
             <FormField
             control={form.control}
             name="lyrics"
@@ -133,10 +163,72 @@ function App() {
                 <FormMessage />
               </FormItem>
             )}/>
-            <div className='flex gap-4'>
-              <Button className="w-28" type="submit">Generate Slides</Button>
+
+<FormField
+          control={form.control}
+          name="insertAt"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Insert Slides</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="beginning" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Beginning
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="end" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      End
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="at" />
+                    </FormControl>
+                    <FormLabel className="font-normal">At</FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+
+          )}
+        />
+  
+         {insertAt == "at" && 
+         
+           <div>
+
+      <FormField
+          control={form.control}
+          name="startPosition"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Where to insert Slide</FormLabel>
+              <FormControl>
+                <Input className='w-40' type="number" placeholder="enter the slide number..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+    
+          </div>}
+       
         
-            </div>
+          <Button className="w-28 self-center" type="submit">Generate Slides</Button>
+         
         </form>
         </Form>
 
@@ -208,6 +300,7 @@ function App() {
             </FormItem>
           )}
         />
+
 
 
           <FormField
