@@ -28,7 +28,9 @@ import Header from './components/Header';
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm,SubmitHandler } from "react-hook-form"
-import {z} from "zod";
+import { z}from "zod";
+import { RadioGroup, RadioGroupItem } from './components/ui/radio-group';
+import { Input } from './components/ui/input';
 
 
 
@@ -36,11 +38,15 @@ function App() {
 
 
   const [slides,setSlides] = useState<SlideType[]>([])
+
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       lyrics:"",
+      insertAt:"beginning",
+      startPosition:"1",
     },
   })
 
@@ -53,10 +59,14 @@ function App() {
     },
   })
 
+  const insertAt = form.watch("insertAt");
+
+
   const pres = useRef(new PptxGenJS())
 
   //Creating the slides
   const createSlides:SubmitHandler<z.infer<typeof formSchema>> = (data: z.infer<typeof formSchema>) => {
+ 
     const content = data.lyrics;
 
     let eachSlideText:string = "";
@@ -65,17 +75,49 @@ function App() {
     content.split('\n').forEach((line: string,index) => {
              
              if( (line.trim() == '' || index == content.split('\n').length - 1) && eachSlideText.trim() != "" ){
-                newSlides.push({ name: `Slide ${slides.length + newSlides.length + 1}`, text: eachSlideText });
+                newSlides.push({ id: slides.length + newSlides.length + 1, text: eachSlideText });
                 eachSlideText = '';
              }else {
                eachSlideText += line + '\n';
              }
     });
+
+    if(data.insertAt == "end"){
+        setSlides((prevSlides) => [...prevSlides, ...newSlides]);
+        return 
+    }
+
+    if(data.insertAt =="beginning"){
+       const nextState = [...newSlides,...slides].map((slide,index)=>{ return {...slide,id:index+1} })
+       setSlides(nextState);
+       return;
+    }
+
+    if(data.insertAt == "at"){
+      const prevState = slides;
+      const nextState = insertAtIndex(prevState,newSlides,Number(data.startPosition)).map((slide,index)=>{return {...slide,id:index+1}})
+      setSlides(nextState);
+
+      return;
+    }
     
-    setSlides((prevSlides) => [...prevSlides, ...newSlides]);
+   
 
   }
 
+  function insertAtIndex(originalArray:SlideType[],newArray:SlideType[],index:number){
+    originalArray.splice(index,0,...newArray)
+    return originalArray
+
+  }
+
+  const removeSlide = (id:number)=>{
+      const nextState  = slides.filter((slide)=> slide.id!=id).map((slide,index)=> {
+                                                          return {...slide,id:index+1}
+                                                    })
+      setSlides(nextState);
+      
+  }
 
 
   //Generating the Presentation slides and creating the file
@@ -96,41 +138,111 @@ function App() {
     }
   }
 
-
-
   return (
 
     <>
     <Header />
   
      <div className='flex flex-col gap-10 m-auto pl-40 pr-40 pb-40'>
-      <Form {...form}>
-      <form onSubmit={form.handleSubmit(createSlides)} className="w-2/3 space-y-6">
-          <FormField
+      <div className='flex gap-10'>
+        <Form {...form}>
+        <form onSubmit={form.handleSubmit(createSlides)} className=" flex  flex-col w-2/3 space-y-6">
+            
+            <FormField
+            control={form.control}
+            name="lyrics"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Lyrics to Slides</FormLabel>
+                <FormControl>
+                <Textarea placeholder={`${sampleLyrics}`} {...field}/>
+                </FormControl>
+                <FormDescription>
+                  *Follow the format after empty space new slide starts.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}/>
+
+<FormField
           control={form.control}
-          name="lyrics"
+          name="insertAt"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Lyrics to Slides</FormLabel>
+            <FormItem className="space-y-3">
+              <FormLabel>Insert Slides</FormLabel>
               <FormControl>
-              <Textarea placeholder={`${sampleLyrics}`} {...field}/>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="beginning" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Beginning
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="end" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      End
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="at" />
+                    </FormControl>
+                    <FormLabel className="font-normal">At</FormLabel>
+                  </FormItem>
+                </RadioGroup>
               </FormControl>
-              <FormDescription>
-                *Follow the format after empty space new slide starts.
-              </FormDescription>
               <FormMessage />
             </FormItem>
-          )}/>
-          <Button className="w-28 " type="submit">Generate Slides</Button>      
-      </form>
-      </Form>
+
+          )}
+        />
+  
+         {insertAt == "at" && 
+         
+           <div>
+
+      <FormField
+          control={form.control}
+          name="startPosition"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Where to insert Slide</FormLabel>
+              <FormControl>
+                <Input className='w-40' type="number" placeholder="enter the slide number..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+    
+          </div>}
+       
+        
+          <Button className="w-28 self-center" type="submit">Generate Slides</Button>
+         
+        </form>
+        </Form>
+
+        
+      </div>
+
+      <Button className="w-28" onClick={()=>setSlides([])}>Delete All Slides</Button>
 
        {/* slides preview */}
        {slides.length > 0 ? 
          <div>
             <h2>Slides Preview </h2>
             <div className="grid grid-cols-3 gap-2">
-                 {slides.map((slide)=>{return <Slide key={slide.name} slide={slide}/> })}
+                 {slides.map((slide,index)=>{return <Slide key={slide.id} id={slide.id}  text={slide.text} removeSlide={removeSlide}/> })}
             </div>
           </div>
           :
@@ -190,7 +302,8 @@ function App() {
         />
 
 
-<FormField
+
+          <FormField
           control={pptForm.control}
           name="fontType"
           render={({ field }) => (
@@ -209,12 +322,16 @@ function App() {
               </Select>
               <FormMessage />
             </FormItem>
-          )}
-        />          
+              )}
+           />          
       </div>
-          <Button type="submit" className='w-28  bg-red-700'>Generate PPT</Button> 
+          <Button type="submit" className='w-28 bg-red-700'>Generate PPT</Button> 
       </form>
       </Form>
+
+      <footer>
+           <a href="https://www.flaticon.com/free-icons/quit" title="quit icons">Quit icons created by Pixel perfect - Flaticon</a>
+      </footer>
       
      </div>
     </>
