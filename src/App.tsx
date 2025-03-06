@@ -67,13 +67,13 @@ function App() {
   //Creating the slides
   const createSlides:SubmitHandler<z.infer<typeof formSchema>> = (data: z.infer<typeof formSchema>) => {
  
+    console.log(data);
     const content = data.lyrics;
 
     let eachSlideText:string = "";
-    
     const newSlides: SlideType[] = [];
     content.split('\n').forEach((line: string,index) => {
-             
+             console.log(line)
              if( (line.trim() == '' || index == content.split('\n').length - 1) && eachSlideText.trim() != "" ){
                 newSlides.push({ id: slides.length + newSlides.length + 1, text: eachSlideText });
                 eachSlideText = '';
@@ -81,6 +81,7 @@ function App() {
                eachSlideText += line + '\n';
              }
     });
+    console.log(newSlides)
 
     if(data.insertAt == "end"){
         setSlides((prevSlides) => [...prevSlides, ...newSlides]);
@@ -118,6 +119,8 @@ function App() {
       setSlides(nextState);
       
   }
+
+  
 
 
   //Generating the Presentation slides and creating the file
@@ -159,7 +162,7 @@ function App() {
                 <Textarea placeholder={`${sampleLyrics}`} {...field}/>
                 </FormControl>
                 <FormDescription>
-                  *Follow the format after empty space new slide starts.
+                  *Add a new line space to create a individual slide.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -168,10 +171,10 @@ function App() {
 
           <div className='flex flex-col gap-10'>
              
-                      <FormField
-                      control={form.control}
-                      name="insertAt"
-                      render={({ field }) => (
+              <FormField
+              control={form.control}
+              name="insertAt"
+              render={({ field }) => (
              <FormItem className="space-y-3">
                <FormLabel>Insert Slides</FormLabel>
                <FormControl>
@@ -236,11 +239,13 @@ function App() {
       </div>
 
       <hr />
+      
 
        {/* slides preview */}
        {slides.length > 0 ? 
          <div>
             <h2>Slides Preview </h2>
+            
             <div className="grid grid-cols-3 gap-2">
                  {slides.map((slide)=>{return <Slide key={slide.id} id={slide.id}  text={slide.text} removeSlide={removeSlide}/> })}
             </div>
@@ -302,8 +307,6 @@ function App() {
             </FormItem>
           )}
         />
-
-
 
           <FormField
           control={pptForm.control}
