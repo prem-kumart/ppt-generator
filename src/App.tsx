@@ -67,13 +67,13 @@ function App() {
   //Creating the slides
   const createSlides:SubmitHandler<z.infer<typeof formSchema>> = (data: z.infer<typeof formSchema>) => {
  
-    console.log(data);
+
     const content = data.lyrics;
 
     let eachSlideText:string = "";
     const newSlides: SlideType[] = [];
     content.split('\n').forEach((line: string,index) => {
-             console.log(line)
+           
              if( (line.trim() == '' || index == content.split('\n').length - 1) && eachSlideText.trim() != "" ){
                 newSlides.push({ id: slides.length + newSlides.length + 1, text: eachSlideText });
                 eachSlideText = '';
@@ -81,7 +81,7 @@ function App() {
                eachSlideText += line + '\n';
              }
     });
-    console.log(newSlides)
+ 
 
     if(data.insertAt == "end"){
         setSlides((prevSlides) => [...prevSlides, ...newSlides]);
