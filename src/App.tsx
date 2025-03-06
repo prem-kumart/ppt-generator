@@ -147,7 +147,8 @@ function App() {
       <div className='flex gap-10'>
         <Form {...form}>
         <form onSubmit={form.handleSubmit(createSlides)} className=" flex  flex-col w-2/3 space-y-6">
-            
+          <div className='flex gap-20 items-center'>
+          <div className='flex-1/3'>
             <FormField
             control={form.control}
             name="lyrics"
@@ -163,79 +164,78 @@ function App() {
                 <FormMessage />
               </FormItem>
             )}/>
+          </div>
 
-<FormField
-          control={form.control}
-          name="insertAt"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Insert Slides</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="beginning" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Beginning
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="end" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      End
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="at" />
-                    </FormControl>
-                    <FormLabel className="font-normal">At</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-
-          )}
-        />
-  
-         {insertAt == "at" && 
-         
-           <div>
-
-      <FormField
-          control={form.control}
-          name="startPosition"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Where to insert Slide</FormLabel>
-              <FormControl>
-                <Input className='w-40' type="number" placeholder="enter the slide number..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-    
-          </div>}
+          <div className='flex flex-col gap-10'>
+             
+                      <FormField
+                      control={form.control}
+                      name="insertAt"
+                      render={({ field }) => (
+             <FormItem className="space-y-3">
+               <FormLabel>Insert Slides</FormLabel>
+               <FormControl>
+                 <RadioGroup
+                   onValueChange={field.onChange}
+                   defaultValue={field.value}
+                   className="flex flex-col space-y-1"
+                 >
+                   <FormItem className="flex items-center space-x-3 space-y-0">
+                     <FormControl>
+                       <RadioGroupItem value="beginning" />
+                     </FormControl>
+                     <FormLabel className="font-normal">
+                       Beginning
+                     </FormLabel>
+                   </FormItem>
+                   <FormItem className="flex items-center space-x-3 space-y-0">
+                     <FormControl>
+                       <RadioGroupItem value="end" />
+                     </FormControl>
+                     <FormLabel className="font-normal">
+                       End
+                     </FormLabel>
+                   </FormItem>
+                   <FormItem className="flex items-center space-x-3 space-y-0">
+                     <FormControl>
+                       <RadioGroupItem value="at" />
+                     </FormControl>
+                     <FormLabel className="font-normal">At</FormLabel>
+                   </FormItem>
+                 </RadioGroup>
+               </FormControl>
+               <FormMessage />
+             </FormItem>
+            
+                      )}
+                    />
+              
+                     {insertAt == "at" &&
+                               <FormField
+                                   control={form.control}
+                                   name="startPosition"
+                                   render={({ field }) => (
+                                     <FormItem>
+                                       <FormLabel>Where to insert Slide</FormLabel>
+                                       <FormControl>
+                                         <Input className='w-40' type="number" placeholder="enter the slide number..." {...field} />
+                                       </FormControl>
+                                       <FormMessage />
+                                     </FormItem>
+                                   )}
+                                 />
+                
+                      }
+          </div>
+          </div>  
        
         
-          <Button className="w-28 self-center" type="submit">Generate Slides</Button>
-         
-        </form>
+              <Button className="w-40 self-center" type="submit">Generate Slides</Button>
+              </form>
         </Form>
-
-        
       </div>
 
-      <Button className="w-28" onClick={()=>setSlides([])}>Delete All Slides</Button>
+      <hr />
 
        {/* slides preview */}
        {slides.length > 0 ? 
@@ -244,12 +244,14 @@ function App() {
             <div className="grid grid-cols-3 gap-2">
                  {slides.map((slide)=>{return <Slide key={slide.id} id={slide.id}  text={slide.text} removeSlide={removeSlide}/> })}
             </div>
+            <Button className="w-28 p-4" onClick={()=>setSlides([])}>Delete All Slides</Button>
           </div>
           :
-          <p>Paste the lyrics and generate slides</p>
+          <p>Slides Preview</p>
         }
 
-
+ 
+      <hr />
       {/*Generate the Slides */}
       <Form {...pptForm}>
       <form onSubmit={pptForm.handleSubmit(generatePresentation)} className="w-2/3 space-y-6">
