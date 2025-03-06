@@ -242,7 +242,7 @@ function App() {
          <div>
             <h2>Slides Preview </h2>
             <div className="grid grid-cols-3 gap-2">
-                 {slides.map((slide,index)=>{return <Slide key={slide.id} id={slide.id}  text={slide.text} removeSlide={removeSlide}/> })}
+                 {slides.map((slide)=>{return <Slide key={slide.id} id={slide.id}  text={slide.text} removeSlide={removeSlide}/> })}
             </div>
           </div>
           :
