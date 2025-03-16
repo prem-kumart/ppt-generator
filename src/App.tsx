@@ -4,7 +4,7 @@ import { Button } from './components/ui/button'
 import PptxGenJS  from 'pptxgenjs'
 import { Textarea } from './components/ui/textarea';
 import Slide from './components/Slide';
-import {useState, useRef } from 'react'
+import {useState, } from 'react'
 import { fontList,sampleLyrics } from './data';
 import { formSchema,pptSchema } from './schema';
 import { SlideType } from './types';
@@ -62,7 +62,7 @@ function App() {
   const insertAt = form.watch("insertAt");
 
 
-  const pres = useRef(new PptxGenJS())
+  
 
   //Creating the slides
   const createSlides:SubmitHandler<z.infer<typeof formSchema>> = (data: z.infer<typeof formSchema>) => {
@@ -126,18 +126,20 @@ function App() {
   //Generating the Presentation slides and creating the file
   const generatePresentation:SubmitHandler<z.infer<typeof pptSchema>> = (data: z.infer<typeof pptSchema>) => {
 
-    pres.current.defineSlideMaster({ 
+    const pres = new PptxGenJS()
+
+    pres.defineSlideMaster({ 
       title: 'MASTER_SLIDE',
       background: { color: '#000000' },
     });
    
     slides.forEach((slideData)=>{
-      const slide = pres.current.addSlide({masterName : 'MASTER_SLIDE'});
-      slide.addText(slideData.text, { x: 0 , y: 3, w: "100%", color: "#FFFFFF", fontSize: Number(data.fontSize), align:'center' ,fontFace:data.fontFace ,bold: data.fontType=='bold' ? true : false , italic :data.fontType=='italic' ? true : false});
+      const slide = pres.addSlide({masterName : 'MASTER_SLIDE'});
+      slide.addText(slideData.text, { x: 0 , y: 3, w: "100%", color: "#FFFFFF", fontSize: Number(data.fontSize), align:'center' ,fontFace:data.fontFace ,bold: data.fontType=='bold' || data.fontType == "bold-italic" ? true : false , italic :data.fontType=='italic' || data.fontType == "bold-italic" ? true : false});
     })
 
-    if (pres.current) {
-      pres.current.writeFile();
+    if (pres) {
+      pres.writeFile();
     }
   }
 
@@ -323,6 +325,8 @@ function App() {
                 <SelectContent>
                 <SelectItem  value="bold">Bold</SelectItem>
                 <SelectItem value="italic">Italic</SelectItem>
+                <SelectItem value="bold-italic">Bold-Italic</SelectItem>
+                <SelectItem value="normal">Normal</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
