@@ -1,54 +1,122 @@
-# React + TypeScript + Vite
+# PPT Lyrics Slides Generator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight React.js app that generates PowerPoint-style *lyrics slides* automatically from song lyrics. Built with **React**, **Tailwind CSS**, and **shadcn/ui**, this project helps musicians, worship teams, and presenters quickly create slide decks with lyric lines, transitions, and export-ready slide images or PPTX files.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+* Paste or upload song lyrics and auto-split into slides by line count or stanza.
+* Multiple slide layout templates (title, centered lyric, two-column, verse/chorus emphasis).
+* Styling controls: font family, size, alignment, letter spacing, and line height.
+* Theme presets and custom color palettes (Tailwind + CSS variables).
+* Preview mode with keyboard navigation between slides.
+* Export options:PPTX export (client-side).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+---
+
+## Tech Stack
+
+* **React** (v18+)
+* **Tailwind CSS** (v4 using `@theme` CSS custom properties)
+* **shadcn/ui** for components
+* **TypeScript** (optional — repo includes `tsconfig` when enabled)
+* **pptxgenjs** (or similar) for PPTX export
+
+
+
+---
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/ppt-lyrics-generator.git
+cd ppt-lyrics-generator
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Install dependencies:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+# npm
+npm install
+# or pnpm
+pnpm install
+# or yarn
+yarn
 ```
+
+3. Start the dev server:
+
+```bash
+npm run dev
+# or
+pnpm dev
+# or
+yarn dev
+```
+
+Open `http://localhost:5173` (Vite default) or the port printed in your terminal.
+
+---
+
+## Usage
+
+* Paste lyrics into the left-side editor.
+* Pick a split rule: **Lines per slide**, **Blank-line stanza**, or **Custom regex**.
+* Choose a layout and theme from the template selector.
+* Tweak typography and alignment using the right-side controls (powered by shadcn form inputs).
+* Click **Preview** to step through slides.
+* Click **Export** and choose **PNG** or **PPTX**.
+
+
+---
+
+## Key Implementation Notes
+
+### Lyrics splitting
+
+* Provide multiple strategies: `linesPerSlide`, `stanzaBreaks` (blank-line delimiter), and `smart` (keeps chorus intact based on repeated stanza matching).
+* Trim and sanitize whitespace; preserve intentional line breaks.
+
+
+### Integrating shadcn/ui
+
+* Import components where needed: `Button`, `Input`, `Select`, `Dialog`, etc.
+* Keep shadcn components wrapped in small adapter components if you need custom behavior (e.g., tied to Tailwind theme tokens).
+
+### Exporting PPTX
+
+* Client-side generation with `pptxgenjs` works well for simple slides (text + background color/image).
+
+
+---
+
+## Deployment
+
+* GitHub Pages are excellent for static deployments.
+* If you need server-side PPTX processing, use a lightweight Node.js endpoint (e.g., Vercel Serverless or AWS Lambda).
+
+---
+
+## Contributing
+
+PRs welcome. Please include:
+
+* A clear description of the change
+* Screenshots/GIFs for visual changes
+* Unit tests for parsing/export logic when applicable
+
+---
+
+## License
+
+MIT
+
+---
+
+## Acknowledgements
+
+* Thanks to shadcn/ui for approachable components and Tailwind for utilities.
