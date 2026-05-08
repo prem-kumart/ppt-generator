@@ -4,7 +4,7 @@ import { Button } from './components/ui/button'
 import PptxGenJS  from 'pptxgenjs'
 import { Textarea } from './components/ui/textarea';
 import Slide from './components/Slide';
-import {useState, } from 'react'
+import {useEffect, useState, } from 'react'
 import { fontList,sampleLyrics } from './data';
 import { formSchema,pptSchema } from './schema';
 import { SlideType } from './types';
@@ -84,13 +84,18 @@ function App() {
  
 
     if(data.insertAt == "end"){
-        setSlides((prevSlides) => [...prevSlides, ...newSlides]);
+
+        const  nextState = [...slides,...newSlides];
+        setSlides(nextState);
+        localStorage.setItem("presentationData",JSON.stringify({slides:nextState}));
+
         return 
     }
 
     if(data.insertAt =="beginning"){
        const nextState = [...newSlides,...slides].map((slide,index)=>{ return {...slide,id:index+1} })
        setSlides(nextState);
+      localStorage.setItem("presentationData",JSON.stringify({slides:nextState}));
        return;
     }
 
@@ -98,9 +103,11 @@ function App() {
       const prevState = slides;
       const nextState = insertAtIndex(prevState,newSlides,Number(data.startPosition)).map((slide,index)=>{return {...slide,id:index+1}})
       setSlides(nextState);
+      localStorage.setItem("presentationData",JSON.stringify({slides:nextState}));
 
       return;
     }
+
     
    
 
@@ -132,6 +139,8 @@ function App() {
       title: 'MASTER_SLIDE',
       background: { color: '#000000' },
     });
+
+    
    
     slides.forEach((slideData)=>{
       const slide = pres.addSlide({masterName : 'MASTER_SLIDE'});
@@ -142,6 +151,15 @@ function App() {
       pres.writeFile();
     }
   }
+
+  useEffect(()=>{
+    const presentationData = localStorage.getItem("presentationData");
+    if(presentationData){
+      const {slides} = JSON.parse(presentationData);
+   
+      setSlides(slides);
+    }
+  },[]);
 
   return (
 
