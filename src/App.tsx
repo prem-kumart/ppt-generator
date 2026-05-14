@@ -161,6 +161,12 @@ function App() {
     }
   },[]);
 
+  //delete all the slides and clear the local storage
+  const deleteAllSlides = ()=>{
+    setSlides([]);
+    localStorage.removeItem("presentationData");
+  }
+
   return (
 
     <>
@@ -269,7 +275,7 @@ function App() {
             <div className="grid grid-cols-3 gap-2">
                  {slides.map((slide)=>{return <Slide key={slide.id} id={slide.id}  text={slide.text} removeSlide={removeSlide}/> })}
             </div>
-            <Button className="w-28 p-4" onClick={()=>setSlides([])}>Delete All Slides</Button>
+            <Button className="w-28 p-4" onClick={deleteAllSlides}>Delete All Slides</Button>
           </div>
           :
           <p>Slides Preview</p>
